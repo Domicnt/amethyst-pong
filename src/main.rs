@@ -9,6 +9,10 @@ use amethyst::{
     utils::application_root_dir,
     core::transform::{
         TransformBundle
+    },
+    input::{
+        InputBundle, 
+        StringBindings
     }
 };
 
@@ -16,6 +20,9 @@ use amethyst::{
 mod pong;
 //imports Pong struct
 use crate::pong::Pong;
+
+//opens mod.rs in systems folder
+mod systems;
 
 fn main() -> amethyst::Result<()> {
     //start error logging
@@ -25,6 +32,8 @@ fn main() -> amethyst::Result<()> {
     let app_root = application_root_dir()?;
     //display config file
     let display_config_path = app_root.join("config").join("display.ron");
+    //binding config file
+    let binding_path = app_root.join("config").join("bindings.ron");
 
     //game logic setup
     let game_data = GameDataBuilder::default()
@@ -38,9 +47,9 @@ fn main() -> amethyst::Result<()> {
             // RenderFlat2D plugin is used to render entities with a `SpriteRender` component.
             .with_plugin(RenderFlat2D::default()),
     )?
-    .with_bundle(
-        TransformBundle::new()
-    )?;
+    .with_bundle(TransformBundle::new())?
+    .with_bundle(InputBundle::<StringBindings>::new().with_bindings_from_file(binding_path)?)?
+    .with(systems::PaddleSystem, "paddle_system", &["input_system"]);
 
     //assets directory
     let assets_dir = app_root.join("assets");
