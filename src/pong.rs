@@ -29,9 +29,8 @@ impl SimpleState for Pong {
         self.ball_spawn_timer.replace(1.0);
 
         // Load the spritesheet necessary to render the graphics.
-        let sprite_sheet_handle = load_sprite_sheet(world);
-
-        initialise_paddles(world, sprite_sheet_handle);
+        self.sprite_sheet_handle.replace(load_sprite_sheet(world));
+        initialise_paddles(world, self.sprite_sheet_handle.clone().unwrap());
         initialise_camera(world);
     }
     fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
